@@ -1,0 +1,105 @@
+const express = require('express');
+const fs = require('fs');
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config(); // Подключаем dotenv для работы с .env
+//const axios = require('axios'); // для сетевых запросов (api)
+//const cheerio = require('cheerio'); // для путей по структуре вашей директории
+
+
+
+const app = express();
+const PORT = 3000;
+const COUNTER_FILE = 'counter.json';
+
+let count = 0; 
+
+// Инициализация счетчика
+if (fs.existsSync(COUNTER_FILE)) {
+    count = JSON.parse(fs.readFileSync(COUNTER_FILE, 'utf8')).count;
+}
+
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
+}));
+app.use(express.json());
+
+// Ошибки
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Что-то пошло не так!');
+});
+
+// Счетчик просмотров
+app.get('/api/counter', (req, res) => {
+    res.json({ count });
+});
+
+app.get('/api/increment', (req, res) => {
+    count++;
+    fs.writeFileSync(COUNTER_FILE, JSON.stringify({ count }));
+    res.json({ count });
+});
+
+
+// Эндпоинт для добавления субдомена
+app.post('/api/setsubdomain', (req, res) => {
+    const { subdomainName, domainName, tonConnectAddress, addressForWalletLink } = req.body;
+
+    // 1. Форматируем данные для .env
+    const newEnvData = `SUBDOMAIN_NAME=${subdomainName}\nDOMAIN_NAME=${domainName}\nWALLET_ADDRESS=${addressForWalletLink}\nTON_CONNECT_ADDRESS=${tonConnectAddress}\n`;
+    console.log(newEnvData);
+    // Записываем данные в .env
+    fs.writeFile(path.join(__dirname, '.env'), newEnvData, (err) => {
+        if (err) {
+            console.error('Error saving to .env:', err);
+            return res.status(500).json({ msg: 'Error saving to .env' });
+        }
+    });
+
+    // 2. Сохранение в subdomains.json
+    const subdomainsPath = path.join(__dirname, 'subdomains.json');
+    
+    // Создаем subdomains.json, если он не существует
+    if (!fs.existsSync(subdomainsPath)) {
+        fs.writeFileSync(subdomainsPath, JSON.stringify([])); // Создаем пустой массив
+    }
+    
+    // Подготовка данных для JSON
+    const newSubdomainEntry = {
+        id: Date.now(), // Можно заменить на инкрементный ID
+        subdomainName,
+	domainName,
+        addressForWalletLink,
+        tonConnectAddress,
+    };
+    console.log(newSubdomainEntry);
+    fs.readFile(subdomainsPath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading subdomains.json:', err);
+            return res.status(500).json({ msg: 'Error reading subdomains.json' });
+        }
+
+        // Парсим существующие данные
+        const subdomains = JSON.parse(data || '[]');
+        subdomains.push(newSubdomainEntry);
+	console.log(subdomains);
+        // Записываем обратно в subdomains.json
+        fs.writeFile(subdomainsPath, JSON.stringify(subdomains, null, 2), (err) => {
+            if (err) {
+                console.error('Error writing to subdomains.json:', err);
+                return res.status(500).json({ msg: 'Error writing to subdomains.json' });
+            }
+
+            res.status(200).json({ msg: 'Subdomain added successfully', subdomain: newSubdomainEntry });
+        });
+    });
+});
+
+ 
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+

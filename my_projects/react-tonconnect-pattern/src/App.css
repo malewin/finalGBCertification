@@ -1,0 +1,128 @@
+@-webkit-keyframes pulsate-bck {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  50% {
+    -webkit-transform: scale(0.9);
+            transform: scale(0.9);
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+}
+@keyframes pulsate-bck {
+  0% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+  50% {
+    -webkit-transform: scale(0.9);
+            transform: scale(0.9);
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+  }
+}
+.App {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(-45deg, rgb(107, 161, 255), rgb(227, 107, 211));
+  height: 100vh;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+button[data-tc-connect-button='true']{
+  background: linear-gradient(45deg, rgb(107, 161, 255), rgb(227, 107, 211));
+  border: 2px solid white;
+}
+
+.pay_icon {
+  background-color: white;
+}
+
+
+.pay_icon:hover {
+  background-color: rgb(227, 107, 211);
+  transform: scale(1.1);
+}
+
+.sendBtn{
+  background: linear-gradient(45deg, rgb(107, 161, 255), rgb(227, 107, 211));
+}
+
+.sendBtnActive{
+  background: linear-gradient(45deg, rgb(107, 161, 255), rgb(227, 107, 211));
+  animation: pulsate-bck 1s ease-in-out infinite both;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px plum inset !important; /* Замените на 'transparent' для прозрачного фона */
+  box-shadow: 0 0 0 1000px plum inset !important; /* Замените на 'transparent' для прозрачного фона */
+}
+
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px plum inset !important; /* Замените на 'transparent' для прозрачного фона */
+  box-shadow: 0 0 0 1000px plum inset !important; /* Замените на 'transparent' для прозрачного фона */
+}
+
+input:-webkit-autofill {
+  background-color: plum !important; /* Замените на 'white' если нужно */
+}
+
+input:-internal-autofill-selected {
+  background-color: plum !important; /* Замените на 'white' если нужно */
+  color: inherit; /* Убедитесь, что цвет текста остается тем же. */
+}
+
+.spanTon {
+  height: 100px;
+    display: flex;
+    align-items: center;
+}
+
+a{
+  text-decoration: none;
+  color: white;
+}
+
+a:hover{
+  color: purple;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,35 @@
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./my_projects/default.conf:/etc/nginx/conf.d/default.conf
+      - ./my_projects/react-tonconnect-pattern/dist/:/usr/share/nginx/html/
+    restart: always
+  tonproxy:
+    image: tonstakers/ton-proxy:latest
+    container_name: tonproxy
+    hostname: tonproxy
+    network_mode: host
+    volumes:
+      - /opt/ton-proxy/keyring:/opt/ton-proxy/keyring
+    command: "rldp-http-proxy -a 31.130.150.35:3333 -R '*'@127.0.0.1:80 -C global.config.json -A utzysjgss24gg43ehvepdl7fbcfgfkoc4qboke75ytbtcc4z2c6cuek -d"
+    logging:
+      driver: json-file
+      options:
+        max-size: 100m
+        max-file: '2'
+  nodejs:
+    build:
+      context: ./my_projects/node_app  # Путь к Node.js
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./my_projects/node_app:/usr/src/app
+  react-app:
+    build:
+      context: ./my_projects/react-tonconnect-pattern  # Путь к вашему React приложению
+    ports:
+      - "3001:80"  # Порт, на котором будет работать React
+    restart: always
